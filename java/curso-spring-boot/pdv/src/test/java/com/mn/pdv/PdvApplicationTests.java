@@ -1,4 +1,4 @@
-package com.mn.pdv.pdv;
+package com.mn.pdv;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
