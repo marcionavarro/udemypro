@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.annotation.Repeatable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
@@ -53,7 +54,7 @@ public class CoinController {
     public ResponseEntity put(@RequestBody Coin coin) {
         try {
             coin.setDateTime(new Timestamp(System.currentTimeMillis()));
-            return new ResponseEntity<>(coinRepository.update(coin),  HttpStatus.OK);
+            return new ResponseEntity<>(coinRepository.update(coin), HttpStatus.OK);
         } catch (Exception error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.NO_CONTENT);
         }
@@ -61,10 +62,12 @@ public class CoinController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable int id) {
+        boolean response = false;
         try {
-            return new ResponseEntity<>(coinRepository.remove(id), HttpStatus.OK);
+            response = coinRepository.remove(id);
+            return new ResponseEntity(response, HttpStatus.OK);
         } catch (Exception error) {
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
         }
     }
 }
