@@ -5,8 +5,6 @@ import lombok.*;
 
 import java.util.List;
 
-// @Getter = @Data
-// @Setter = @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
