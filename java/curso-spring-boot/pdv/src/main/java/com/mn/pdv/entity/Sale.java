@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collector;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,5 +30,4 @@ public class Sale {
 
     @OneToMany(mappedBy = "sale", fetch = FetchType.LAZY)
     private List<ItemSale> items;
-
 }

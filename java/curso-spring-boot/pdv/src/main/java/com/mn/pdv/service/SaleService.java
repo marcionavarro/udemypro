@@ -1,11 +1,15 @@
 package com.mn.pdv.service;
 
 import com.mn.pdv.dto.ProductDTO;
+import com.mn.pdv.dto.ProductInfoDTO;
 import com.mn.pdv.dto.SaleDTO;
+import com.mn.pdv.dto.SaleInfoDTO;
 import com.mn.pdv.entity.ItemSale;
 import com.mn.pdv.entity.Product;
 import com.mn.pdv.entity.Sale;
 import com.mn.pdv.entity.User;
+import com.mn.pdv.exceptions.InvalidOperationException;
+import com.mn.pdv.exceptions.NoItemException;
 import com.mn.pdv.repository.ItemSaleRepository;
 import com.mn.pdv.repository.ProductRepository;
 import com.mn.pdv.repository.SaleRepository;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +31,29 @@ public class SaleService {
     private final ProductRepository productRepository;
     private final SaleRepository saleRepository;
     private final ItemSaleRepository itemSaleRepository;
+
+    public List<SaleInfoDTO> findAll() {
+        return saleRepository.findAll().stream().map(sale -> getSaleInfo(sale)).collect(Collectors.toList());
+    }
+
+    private SaleInfoDTO getSaleInfo(Sale sale) {
+        SaleInfoDTO saleInfoDTO = new SaleInfoDTO();
+        saleInfoDTO.setUser(sale.getUser().getName());
+        saleInfoDTO.setDate(sale.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        saleInfoDTO.setProducts(getProductInfo(sale.getItems()));
+
+        return saleInfoDTO;
+    }
+
+    private List<ProductInfoDTO> getProductInfo(List<ItemSale> items) {
+        return items.stream().map(item -> {
+            ProductInfoDTO productInfoDTO = new ProductInfoDTO();
+            productInfoDTO.setDescription(item.getProduct().getDescription());
+            productInfoDTO.setQuantity(item.getQuantity());
+
+            return productInfoDTO;
+        }).collect(Collectors.toList());
+    }
 
     @Transactional
     public long save(SaleDTO sale) {
@@ -58,8 +86,27 @@ public class SaleService {
             itemSale.setProduct(product);
             itemSale.setQuantity(item.getQuantity());
 
+            if (product.getQuantity() == 0) {
+                throw new NoItemException(String.format("Produto (%s) sem estoque.", product.getDescription()));
+            }
+
+            if (product.getQuantity() < item.getQuantity()) {
+                throw new InvalidOperationException(String.format(
+                        "A quantidade de (%s) items da venda é maior que a quantidade de (%s) items disponivel em estoque.",
+                        item.getQuantity(), product.getQuantity())
+                );
+            }
+
+            int total = product.getQuantity() - item.getQuantity();
+            product.setQuantity(total);
+            productRepository.save(product);
+
             return itemSale;
         }).collect(Collectors.toList());
     }
 
+    public Object getById(long id) {
+        Sale sale = saleRepository.findById(id).get();
+        return getSaleInfo(sale);
+    }
 }
