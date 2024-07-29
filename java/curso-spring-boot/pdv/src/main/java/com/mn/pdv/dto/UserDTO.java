@@ -4,11 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ProductInfoDTO {
-    private long id;
-    private String description;
-    private int quantity;
+public class UserDTO {
+
+    private Long id;
+    private String name;
+    private boolean isEnabled;
+
 }

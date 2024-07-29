@@ -1,5 +1,6 @@
 package com.mn.pdv.controller;
 
+import com.mn.pdv.dto.ResponseDTO;
 import com.mn.pdv.dto.SaleDTO;
 import com.mn.pdv.exceptions.InvalidOperationException;
 import com.mn.pdv.exceptions.NoItemException;
@@ -26,19 +27,23 @@ public class SaleController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity getById(@PathVariable long id){
-        return new ResponseEntity<>(saleService.getById(id), HttpStatus.OK);
+    public ResponseEntity getById(@PathVariable long id) {
+        try {
+            return new ResponseEntity<>(saleService.getById(id), HttpStatus.OK);
+        } catch (Exception error) {
+            return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping()
     public ResponseEntity post(@RequestBody SaleDTO saleDTO) {
         try {
-            saleService.save(saleDTO);
-            return new ResponseEntity<>("Venda realizada com sucesso: ", HttpStatus.CREATED);
-        }catch (NoItemException | InvalidOperationException error){
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.BAD_REQUEST);
+            long id = saleService.save(saleDTO);
+            return new ResponseEntity<>(new ResponseDTO("Venda realizada com sucesso: " + id), HttpStatus.CREATED);
+        } catch (NoItemException | InvalidOperationException error) {
+            return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception error) {
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
