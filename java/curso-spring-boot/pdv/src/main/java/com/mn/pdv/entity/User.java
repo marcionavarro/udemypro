@@ -1,6 +1,7 @@
 package com.mn.pdv.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class User {
     private Long id;
 
     @Column(length = 100, nullable = false)
+    @NotBlank(message = "Campo nome é obrigatório")
     private String name;
 
     private boolean isEnable;
