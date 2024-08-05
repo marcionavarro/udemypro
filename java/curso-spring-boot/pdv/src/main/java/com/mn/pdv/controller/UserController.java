@@ -1,8 +1,7 @@
 package com.mn.pdv.controller;
 
 import com.mn.pdv.dto.ResponseDTO;
-import com.mn.pdv.entity.User;
-import com.mn.pdv.exceptions.NoItemException;
+import com.mn.pdv.dto.UserDTO;
 import com.mn.pdv.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +27,9 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity post(@Valid @RequestBody User user) {
+    public ResponseEntity post(@Valid @RequestBody UserDTO user) {
         try {
-            user.setEnable(true);
+            user.setEnabled(true);
             return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
         } catch (Exception error) {
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -38,7 +37,7 @@ public class UserController {
     }
 
     @PutMapping()
-    public ResponseEntity put(@Valid @RequestBody User user) {
+    public ResponseEntity put(@Valid @RequestBody UserDTO user) {
         try {
             return new ResponseEntity(userService.update(user), HttpStatus.OK);
         } catch (Exception error) {

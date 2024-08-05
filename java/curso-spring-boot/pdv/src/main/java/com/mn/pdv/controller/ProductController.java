@@ -1,9 +1,11 @@
 package com.mn.pdv.controller;
 
+import com.mn.pdv.dto.ProductDTO;
 import com.mn.pdv.dto.ResponseDTO;
 import com.mn.pdv.entity.Product;
 import com.mn.pdv.repository.ProductRepository;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,11 @@ import java.util.Optional;
 public class ProductController {
 
     private ProductRepository productRepository;
+    private ModelMapper mapper;
 
     public ProductController(@Autowired ProductRepository productRepository) {
         this.productRepository = productRepository;
+        this.mapper = new ModelMapper();
     }
 
     @GetMapping()
@@ -28,9 +32,9 @@ public class ProductController {
     }
 
     @PostMapping()
-    public ResponseEntity post(@Valid  @RequestBody Product product) {
+    public ResponseEntity post(@Valid @RequestBody ProductDTO product) {
         try {
-            return new ResponseEntity<>(productRepository.save(product), HttpStatus.CREATED);
+            return new ResponseEntity<>(productRepository.save(mapper.map(product, Product.class)), HttpStatus.CREATED);
         } catch (Exception error) {
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -39,7 +43,7 @@ public class ProductController {
     @PutMapping()
     public ResponseEntity put(@Valid @RequestBody Product product) {
         try {
-            return new ResponseEntity<>(productRepository.save(product), HttpStatus.OK);
+            return new ResponseEntity<>(productRepository.save(mapper.map(product, Product.class)), HttpStatus.OK);
         } catch (Exception error) {
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
