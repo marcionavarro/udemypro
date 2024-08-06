@@ -29,7 +29,7 @@ public class UserController {
     @PostMapping()
     public ResponseEntity post(@Valid @RequestBody UserDTO user) {
         try {
-            user.setEnabled(true);
+            user.setEnable(true);
             return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
         } catch (Exception error) {
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,9 +1,7 @@
 package com.mn.pdv.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.List;
 
@@ -19,8 +17,13 @@ public class User {
     private Long id;
 
     @Column(length = 100, nullable = false)
-    @NotBlank(message = "Campo nome é obrigatório")
     private String name;
+
+    @Column(length = 30, nullable = false, unique = true)
+    private String username;
+
+    @Column(length = 60, nullable = false)
+    private String password;
 
     private boolean isEnable;
 
