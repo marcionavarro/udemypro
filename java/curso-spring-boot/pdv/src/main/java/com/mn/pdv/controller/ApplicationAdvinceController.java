@@ -1,10 +1,11 @@
 package com.mn.pdv.controller;
 
 import com.mn.pdv.dto.ResponseDTO;
-import com.mn.pdv.entity.Sale;
 import com.mn.pdv.exceptions.InvalidOperationException;
 import com.mn.pdv.exceptions.NoItemException;
+import com.mn.pdv.exceptions.PassworNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,6 +29,18 @@ public class ApplicationAdvinceController {
     public ResponseDTO handleInvalidOperationException(InvalidOperationException ex) {
         String messageError = ex.getMessage();
         return new ResponseDTO(messageError);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseDTO handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        return new ResponseDTO(ex.getMessage());
+    }
+
+    @ExceptionHandler(PassworNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseDTO handlePassworNotFoundException(PassworNotFoundException ex) {
+        return new ResponseDTO(ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
