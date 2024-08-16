@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"/>
 </head>
 <body>
-<<<<<<< HEAD
 <div id="app" class="container">
     <div class="my-3 text-center">
         <h2>Carteira de CryptoMoedas</h2>
@@ -19,7 +18,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Nome</th>
-                    <th scope="col">Qauntidade</th>
+                    <th scope="col">Quantidade</th>
                     <th scope="col"></th>
                 </tr>
                 </thead>
@@ -29,7 +28,9 @@
                     <td>{{ coin.name }}</td>
                     <td>{{ coin.quantity }}</td>
                     <td>
-                        <button class="btn btn-primary btn-sm" type="submit">Transações</button>
+                        <button @click="showTransactions(coin.name)" class="btn btn-primary btn-sm" type="button">
+                            Transações
+                        </button>
                     </td>
                 </tr>
                 </tbody>
@@ -37,34 +38,66 @@
         </div>
     </div>
 
-    <div class="d-flex flex-row justify-content-between">
-        <div class="card mt-4">
-            <div class="card-body">
-                <h3 class="card-title mb-3">{{ formCoin.title }}</h3>
-                <div class="form-group mb-2">
-                    <label class="mb-2">Nome da crypto</label>
-                    <input type="text" class="form-control" v-model="formCoin.name"/>
-                </div>
-                <div class="form-group mb-2">
-                    <label class="mb-2">Preço</label>
-                    <input type="text" class="form-control" v-model="formCoin.price"/>
-                </div>
-                <div class="form-group mb-2">
-                    <label class="mb-2">Quantidade</label>
-                    <input type="number" class="form-control" v-model="formCoin.quantity"/>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <button class="btn btn-primary btn-sm" type="button">{{ formCoin.button }}</button>
-                    <button class="btn btn-warning btn-sm" type="button">Limpar</button>
+    <div class="row mt-4">
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title mb-3">{{ formCoin.title }}</h3>
+                    <div class="form-group mb-2">
+                        <label class="mb-2">Nome da crypto</label>
+                        <input type="text" class="form-control" v-model="formCoin.name"/>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label class="mb-2">Preço</label>
+                        <input type="text" class="form-control" v-model="formCoin.price"/>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label class="mb-2">Quantidade</label>
+                        <input type="number" class="form-control" v-model="formCoin.quantity"/>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <button @click="saveCoin" class="btn btn-primary btn-sm" type="button">{{ formCoin.button }}
+                        </button>
+                        <button @click="cleanForm" class="btn btn-warning btn-sm" type="button">Limpar</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div>
-
+        <div v-if="canSeeTransactions" class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title mb-3">Transações - <span>{{ transactions.coinName }}</span></h3>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Preço</th>
+                            <th scope="col">Quantidade</th>
+                            <th scope="col">Data da compra</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(transaction, index) in transactions.data" :key="transaction.id">
+                            <td>{{ transaction.id }}</td>
+                            <td>{{ transaction.price }}</td>
+                            <td>{{ transaction.quantity }}</td>
+                            <td>{{ transaction.dateTime }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" type="submit">Editar</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" type="submit">Remover</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
 
 
@@ -75,7 +108,6 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
 <script src="VueApp.js"></script>
-=======
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.4/axios.min.js"></script>
@@ -84,7 +116,5 @@
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="VueApp.js"></script>
-
->>>>>>> origin
 </body>
 </html>
