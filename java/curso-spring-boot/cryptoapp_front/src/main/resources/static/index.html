@@ -11,7 +11,7 @@
     <div class="my-3 text-center">
         <h2>Carteira de CryptoMoedas</h2>
     </div>
-    <div class="card">
+    <div v-if="canSeeCoins" class="card">
         <div class="card-body">
             <table class="table table-hover">
                 <thead>
@@ -86,10 +86,16 @@
                             <td>{{ transaction.quantity }}</td>
                             <td>{{ transaction.dateTime }}</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" type="submit">Editar</button>
+                                <button @click="editTransaction(transaction)" class="btn btn-primary btn-sm"
+                                        type="button">
+                                    Editar
+                                </button>
                             </td>
                             <td>
-                                <button class="btn btn-danger btn-sm" type="submit">Remover</button>
+                                <button @click="removeTransaction(transaction)" class="btn btn-danger btn-sm"
+                                        type="button">
+                                    Remover
+                                </button>
                             </td>
                         </tr>
                         </tbody>

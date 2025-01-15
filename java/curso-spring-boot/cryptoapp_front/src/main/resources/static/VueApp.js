@@ -6,6 +6,7 @@ const mainContainer = {
     data() {
         return {
             coins: [],
+            canSeeCoins: true,
             canSeeTransactions: false,
             formCoin: {
                 isNew: true,
@@ -23,21 +24,38 @@ const mainContainer = {
     },
     methods: {
         showAllCoins() {
+            this.coins = []
             axios.get(baseUrl)
-                .then(res => res.data.map((item) => this.coins.push(item)))
+                .then(res => {
+                    if (res.data.length <= 0) {
+                        this.canSeeCoins = false
+                    }
+                    res.data.map((item) => this.coins.push(item))
+                })
                 .catch(err => console.log(err))
         },
         showTransactions(name) {
-            this.transactions = {
-                coinName: name,
-                data: []
-            }
+            this.formCoin = {
+                isNew: true,
+                name: '',
+                price: '',
+                quantity: '',
+                title: 'Cadastrar nova transação',
+                button: 'Cadastrar'
+            },
+
+                this.transactions = {
+                    coinName: name,
+                    data: []
+                }
 
             this.canSeeTransactions = true
 
             axios.get(`${baseUrl}/${name}`)
                 .then(res => {
-                    console.log(res)
+                    if (res.data.length <= 0) {
+                        this.canSeeTransactions = false
+                    }
                     res.data.map(item => {
                         this.transactions.data.push({
                             id: item.id,
@@ -71,17 +89,51 @@ const mainContainer = {
 
             const self = this
 
-            axios.post(baseUrl, coin)
-                .then(res => {
-                    this.coins = []
-                    toastr.success('Nova transação cadastrada com sucesso!', 'Formulário', this.toastrOptions())
-                })
-                .catch(err => toastr.error('Não foi possivel cadastrar uma nova transação.', 'Formulário', this.toastrOptions()))
-                .then(function () {
+            if (this.formCoin.isNew) {
+                this.coins = []
+                this.canSeeCoins = true
+                axios.post(baseUrl, coin)
+                    .then(() => {
+                        toastr.success('Nova transação cadastrada com sucesso!', 'Formulário', self.toastrOptions())
+                    })
+                    .catch(err => toastr.error(`Não foi possivel cadastrar uma nova transação.${err}`, 'Formulário', self.toastrOptions()))
+                    .then(() => self.thenFinally(self))
+                return
+            }
+
+            const putCoin = {
+                id: this.formCoin.id,
+                ...coin
+            }
+
+            axios.put(baseUrl, putCoin)
+                .then(() => toastr.success('Transação atualizada com sucesso!', 'Formulário', self.toastrOptions()))
+                .catch(err => toastr.error(`Não foi possível atualizar a transação. ${err}`, 'Formulário', self.toastrOptions()))
+                .then(() => self.thenFinally(self))
+        },
+        editTransaction(transaction) {
+            this.formCoin = {
+                isNew: false,
+                id: transaction.id,
+                name: transaction.name.toUpperCase(),
+                price: transaction.price,
+                quantity: transaction.quantity,
+                title: 'Editar transação',
+                button: 'Atualizar'
+            }
+        },
+        removeTransaction(transaction) {
+            const self = this
+
+            axios.delete(`${baseUrl}/${transaction.id}`)
+                .then(() => toastr.success('Transação removida com sucesso!', 'Exclusão', self.toastrOptions()))
+                .catch(err => toastr.error(`Não foi possível remover as transações. ${err}`, 'Exclusão', self.toastrOptions()))
+                .then(() => {
                     self.showAllCoins()
-                    self.showTransactions(coin.name)
+                    self.showTransactions(transaction.name)
                     self.cleanForm()
                 })
+
         },
         cleanForm() {
             this.formCoin.isNew = true,
@@ -90,6 +142,11 @@ const mainContainer = {
                 this.formCoin.quantity = '',
                 this.formCoin.title = 'Cadastrar nova transação',
                 this.formCoin.button = 'Cadastrar'
+        },
+        thenFinally(self) {
+            self.showAllCoins()
+            self.showTransactions(self.formCoin.name)
+            self.cleanForm()
         },
         formattedDate(date) {
             return (new Date(date.split('T')[0])).toLocaleDateString("pt-br")
